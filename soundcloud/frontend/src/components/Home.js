@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
@@ -16,6 +16,7 @@ function Home() {
     const [username, setUsername] = useState('');
     const [timestamp, setTimestamp] = useState('');
     const [content, setContent] = useState('');
+    const [buttonDisabled, setButtonDisabled] = useState(true);
 
     const handleCommentSubmit = () => {
         const commentInfo = {
@@ -33,41 +34,48 @@ function Home() {
 
     const handleUsername = (e) => {
         setUsername(e.target.value);
-    }
+    };
 
     const handleTimestamp = (e) => {
         setTimestamp(e.target.value);
-    }
+    };
 
     const handleContent = (e) => {
         setContent(e.target.value);
-    }
+    };
+
+    useEffect(() => {
+        setButtonDisabled(username.length > 0 && timestamp.length > 0 && content.length > 0);
+    }, [username, timestamp, content]);
+      
 
     return (
         <div>
-            <TextField value={username} label='Username'
-                required
-                onChange={(e) => {
-                    handleUsername(e);
-                }}
-            />
-            <TextField value={timestamp} label='Timestamp'
-                required
-                onChange={(e) => {
-                    handleTimestamp(e);
-                }}
-            />
-            <TextField value={content} label='Comment'
-                required
-                multiline
-                rows={5}
-                onChange={(e) => {
-                    handleContent(e);
-                }}
-            />
-            <Button onClick={handleCommentSubmit} color="primary">
-                Submit Comment
-            </Button>
+            <FormControl>
+                <TextField value={username} label='Username'
+                    required
+                    onChange={(e) => {
+                        handleUsername(e);
+                    }}
+                />
+                <TextField value={timestamp} label='Timestamp'
+                    required
+                    onChange={(e) => {
+                        handleTimestamp(e);
+                    }}
+                />
+                <TextField value={content} label='Comment'
+                    required
+                    multiline
+                    rows={5}
+                    onChange={(e) => {
+                        handleContent(e);
+                    }}
+                />
+                <Button onClick={handleCommentSubmit} disabled={!buttonDisabled} color="primary">
+                    Submit Comment
+                </Button>
+            </FormControl>
         </div>
     );
 }
