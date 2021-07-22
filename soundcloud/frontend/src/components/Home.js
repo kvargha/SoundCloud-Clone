@@ -3,12 +3,7 @@ import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
-import FormHelperText from "@material-ui/core/FormHelperText";
 import FormControl from "@material-ui/core/FormControl";
-import { Link } from "react-router-dom";
-import Radio from "@material-ui/core/Radio";
-import RadioGroup from "@material-ui/core/RadioGroup";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
 
 const axios = require('axios');
 
@@ -27,7 +22,6 @@ function Home() {
 
         axios.post('/api/post/', commentInfo)
             .then(() => {
-                console.log("Comment Posted");
                 setContent('');
             });
     };
@@ -45,6 +39,12 @@ function Home() {
     };
 
     useEffect(() => {
+        axios.get('/api/get')
+            .then((res) => {
+                console.log(res.data);
+
+            });
+
         setButtonDisabled(username.length > 0 && timestamp.length > 0 && content.length > 0);
     }, [username, timestamp, content]);
       
