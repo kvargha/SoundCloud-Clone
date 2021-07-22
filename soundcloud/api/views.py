@@ -6,7 +6,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 class CommentView(generics.ListAPIView):
-    queryset = Comment.objects.all()
+    # Order comments in descending order by date created
+    queryset = Comment.objects.all().order_by('-date_created')
     serializer_class = CommentSerializer
 
 class CreateComment(APIView):
