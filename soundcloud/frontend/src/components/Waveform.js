@@ -46,7 +46,8 @@ const useStyles = makeStyles((theme) => ({
     },
     waveFormContainer: {
         display: 'flex',
-        maxHeight: '30vh'
+        maxHeight: '30vh',
+        background: 'linear-gradient(135deg, rgb(151, 136, 114) 0%, rgb(35, 28, 26) 100%)'
     },
     songInfo: {
         width: '10vw',
