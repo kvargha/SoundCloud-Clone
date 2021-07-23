@@ -32,7 +32,14 @@ const useStyles = makeStyles((theme) => ({
     listItem: {
         width: '60vw',
         wordWrap: 'break-word'
-    }
+    },
+    button: {
+        marginTop: '10px',
+        background: 'orangered',
+        '&:hover': {
+            backgroundColor: 'orangered',
+        },
+    },
 }));
 
 // https://material-ui.com/components/dialogs/#dialog
@@ -132,10 +139,10 @@ function Home() {
                 </Toolbar>
             </AppBar>
             <div className={classes.toolbar} />
-            <List style={{maxHeight: '50vh', minWidth: '100vw', overflow: 'auto'}}>
+            <Waveform/>
+            <List style={{maxHeight: '70vh', minWidth: '100vw', overflow: 'auto'}}>
                 {comments}
             </List>
-            <Waveform/>
             <Dialog
                 style={{zIndex: 2401}}
                 fullWidth
@@ -153,7 +160,7 @@ function Home() {
                                 fullWidth
                                 onChange={(e) => {
                                     handleUsername(e);
-                            }}
+                                }}
                             />
                         </div>
                         <div>
@@ -186,6 +193,9 @@ function Home() {
                                 variant='contained'
                                 color='primary'
                                 fullWidth
+                                classes={{
+                                    root: classes.button,
+                                }}
                             >
                                 Submit Comment
                             </Button>

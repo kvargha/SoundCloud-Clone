@@ -1,6 +1,18 @@
 import React, { useEffect, useRef, useState } from "react";
 import WaveSurfer from "wavesurfer.js";
 
+import {
+    IconButton,
+    Grid,
+    makeStyles,
+    Typography
+} from '@material-ui/core/';
+
+import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled';
+import PauseCircleFilledIcon from '@material-ui/icons/PauseCircleFilled';
+import Slider from '@material-ui/core/Slider';
+import VolumeDown from '@material-ui/icons/VolumeDown';
+import VolumeUp from '@material-ui/icons/VolumeUp';
 
 const formWaveSurferOptions = ref => ({
     container: ref,
@@ -17,16 +29,71 @@ const formWaveSurferOptions = ref => ({
     partialRender: true
 });
 
+const useStyles = makeStyles((theme) => ({
+    root: {
+        color: 'orangered'
+    },
+    thumb : {
+        backgroundColor: 'orangered',
+    },
+    rail: {
+        color: 'orangered'
+    },
+    button: {
+        color: 'orangered',
+        display: 'block',
+        margin: 'auto',
+    },
+    waveFormContainer: {
+        display: 'flex',
+        maxHeight: '30vh'
+    },
+    songInfo: {
+        width: '10vw',
+        marginRight: '10px',
+        marginLeft: '10px',
+        position: 'relative'
+    },
+    waveForm: {
+        flexGrow: 1,
+        display: 'block',
+        margin: 'auto'
+    },
+    thumbnail: {
+        float: 'right',
+        marginTop: '10px',
+        marginRight: '10px',
+        marginLeft: '10px',
+        maxHeight: '90%',
+    },
+    artist: {
+        background: 'black',
+        color: '#CDCDCD',
+        marginBottom: '10px',
+        marginTop: '10px',
+    },
+    songName: {
+        background: 'black',
+        color: 'white',
+        marginBottom: '20px'
+    },
+    volumeSlider: {
+        position: 'absolute',
+        bottom: 0,
+        marginBottom: '10px',
+    }
+}));
+
+
 export default function Waveform() {
     const waveformRef = useRef(null);
     const wavesurfer = useRef(null);
     const [playing, setPlay] = useState(false);
     const [volume, setVolume] = useState(0.5);
 
-    const thumbnail = 'https://drive.google.com/file/d/1OGQo1zdl1Ag56dZaRROgPeXX16mTpKRH/view?usp=sharing/';
-    const url = 'https://drive.google.com/file/d/1vHWyjwIgt2ZFDS01Vh25_hvyGP61V4yG';
+    const thumbnail = 'http://localhost:8000/static/thumbnail.jpeg';
     
-
+    const classes = useStyles();
 
     // create new WaveSurfer instance
     // On component mount and when url changes
@@ -36,7 +103,7 @@ export default function Waveform() {
         const options = formWaveSurferOptions(waveformRef.current);
         wavesurfer.current = WaveSurfer.create(options);
         
-        wavesurfer.current.load('https://www.mfiles.co.uk/mp3-downloads/franz-schubert-standchen-serenade.mp3');
+        wavesurfer.current.load('static/song.mp3');
 
         wavesurfer.current.on("ready", function() {
         // https://wavesurfer-js.org/docs/methods.html
@@ -61,35 +128,54 @@ export default function Waveform() {
         wavesurfer.current.playPause();
     };
 
-    const onVolumeChange = e => {
-        const { target } = e;
-        const newVolume = +target.value;
-
-        if (newVolume) {
+    const onVolumeChange = (event, newVolume) => {
         setVolume(newVolume);
         wavesurfer.current.setVolume(newVolume || 1);
-        }
     };
 
     return (
-        <div>
-        <div id="waveform" ref={waveformRef} />
-        <div className="controls">
-            <button onClick={handlePlayPause}>{!playing ? "Play" : "Pause"}</button>
-            <input
-            type="range"
-            id="volume"
-            name="volume"
-            // waveSurfer recognize value of `0` same as `1`
-            //  so we need to set some zero-ish value for silence
-            min="0.01"
-            max="1"
-            step=".025"
-            onChange={onVolumeChange}
-            defaultValue={volume}
-            />
-            <label htmlFor="volume">Volume</label>
-        </div>
+        <div className = {classes.waveFormContainer}>
+            <div className = {classes.songInfo}> 
+                <Typography align='center' className={classes.artist}>Noisestorm</Typography>
+                <Typography align='center' className={classes.songName}>Crab Rave</Typography>
+                <IconButton
+                    color='primary'
+                    align='center'
+                    onClick = {handlePlayPause}
+                    classes={{
+                        root: classes.button,
+                    }}
+                >
+                    {!playing ? <PlayCircleFilledIcon style={{ fontSize: 80 }}/> : <PauseCircleFilledIcon style={{ fontSize: 80 }}/>}
+                </IconButton>
+                <Grid container spacing={2} className = {classes.volumeSlider}>
+                    <Grid item>
+                        <VolumeDown />
+                    </Grid>
+                    <Grid item xs>
+                        <Slider
+                            min={0.01}
+                            max={1}
+                            value={volume}
+                            step={0.025}
+                            onChange={onVolumeChange}
+                            aria-labelledby="continuous-slider"
+                            classes={{
+                                root: classes.root,
+                                thumb: classes.thumb,
+                                rail: classes.rail,
+                            }}
+                        />
+                    </Grid>
+                    <Grid item>
+                        <VolumeUp />
+                    </Grid>
+                </Grid>
+            </div>
+            <div id="waveform" ref={waveformRef} className = {classes.waveForm}/>
+            <div>
+                <img src = {thumbnail} className = {classes.thumbnail}/>
+            </div>
         </div>
     );
 }
