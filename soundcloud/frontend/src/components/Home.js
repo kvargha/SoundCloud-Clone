@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect} from 'react';
 import {
     List, 
     ListItem,
@@ -127,7 +127,7 @@ function Home() {
             <AppBar position='fixed' style={{background: '#333'}}>
                 <Toolbar>
                     <Typography>Soundcloud</Typography>
-                    <Typography variant="h6" style={{flexGrow: 1}}>
+                    <Typography variant='h6' style={{flexGrow: 1}}>
                     </Typography>
                     <IconButton color='inherit' edge='end' onClick = {() => setOpenCommentDialogue(true)} >
                         <AddCommentIcon/>
@@ -185,8 +185,8 @@ function Home() {
                         <div>
                             <Button onClick={handleCommentSubmit} 
                                 disabled={!buttonDisabled}
-                                variant="contained"
-                                color="primary"
+                                variant='contained'
+                                color='primary'
                                 fullWidth
                             >
                                 Submit Comment
