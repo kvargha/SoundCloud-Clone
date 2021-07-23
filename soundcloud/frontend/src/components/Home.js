@@ -1,15 +1,42 @@
 import React, {useState, useEffect} from "react";
-import Button from "@material-ui/core/Button";
-import Grid from "@material-ui/core/Grid";
-import Typography from "@material-ui/core/Typography";
-import TextField from "@material-ui/core/TextField";
-import FormControl from "@material-ui/core/FormControl";
-import Avatar from '@material-ui/core/Avatar';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListItem from '@material-ui/core/ListItem';
-import List from '@material-ui/core/List';
+import {
+    List, 
+    ListItem,
+    ListItemText,
+    Button,
+    Typography,
+    TextField,
+    Avatar,
+    AppBar,
+    Toolbar,
+    IconButton,
+    Dialog,
+    Slide,
+    makeStyles,
+    Grid,
+} from '@material-ui/core/';
+
+import AddCommentIcon from '@material-ui/icons/AddComment';
 
 const axios = require('axios');
+
+const useStyles = makeStyles((theme) => ({
+    toolbar: theme.mixins.toolbar,
+    commentBox: {
+        marginTop: '10px',
+        marginBottom: '10px',
+        width: '90%',
+    },
+    listItem: {
+        width: '60vw',
+        wordWrap: 'break-word'
+    }
+}));
+
+// https://material-ui.com/components/dialogs/#dialog
+const Transition = React.forwardRef(function Transition(props, ref) {
+    return <Slide direction='up' ref={ref} {...props} />;
+});
 
 function Home() {
     const [username, setUsername] = useState('');
@@ -17,6 +44,9 @@ function Home() {
     const [content, setContent] = useState('');
     const [buttonDisabled, setButtonDisabled] = useState(true);
     const [comments, setComments] = useState([]);
+    const [openCommentDialogue, setOpenCommentDialogue] = useState(false);
+
+    const classes = useStyles();
 
     const handleCommentSubmit = () => {
         const commentInfo = {
@@ -28,6 +58,7 @@ function Home() {
         axios.post('/api/post/', commentInfo)
             .then(() => {
                 setContent('');
+                setOpenCommentDialogue(false);
             });
     };
 
@@ -43,6 +74,8 @@ function Home() {
         setContent(e.target.value);
     };
 
+   
+
     useEffect(() => {
         axios.get('/api/get')
             .then((res) => {
@@ -55,22 +88,28 @@ function Home() {
                             </Avatar>
                             <ListItemText 
                                 primary={
-                                    <Typography>
-                                        {comment.username} at {comment.timestamp}
-                                    </Typography>  
+                                    <div>
+                                        <Typography noWrap>
+                                            {comment.username} at {comment.timestamp}
+                                        </Typography>  
+                                    </div>
                                 }
                                 secondary={
-                                        <Typography>
+                                    <div>
+                                        <Typography className={classes.listItem}>
                                             {comment.content}
                                         </Typography>
+                                    </div>
                                 } 
                             />
                             <ListItemText
                                 style={{display:'flex', justifyContent:'flex-end'}}
                                 primary={
-                                    <Typography>
-                                        {comment.date_created}
-                                    </Typography>
+                                    <div>
+                                        <Typography>
+                                            {comment.date_created}
+                                        </Typography>
+                                    </div>
                                 }
                             />
                         </ListItem>
@@ -85,34 +124,77 @@ function Home() {
 
     return (
         <div>
-            <FormControl>
-                <TextField value={username} label='Username'
-                    required
-                    onChange={(e) => {
-                        handleUsername(e);
-                    }}
-                />
-                <TextField value={timestamp} label='Timestamp'
-                    required
-                    onChange={(e) => {
-                        handleTimestamp(e);
-                    }}
-                />
-                <TextField value={content} label='Comment'
-                    required
-                    multiline
-                    rows={5}
-                    onChange={(e) => {
-                        handleContent(e);
-                    }}
-                />
-                <Button onClick={handleCommentSubmit} disabled={!buttonDisabled} color="primary">
-                    Submit Comment
-                </Button>
-            </FormControl>
-            <List style={{maxHeight: '70vh', minWidth: '100vw', overflow: 'auto'}}>
+            <AppBar position='fixed' style={{background: '#333'}}>
+                <Toolbar>
+                    <Typography>Soundcloud</Typography>
+                    <Typography variant="h6" style={{flexGrow: 1}}>
+                    </Typography>
+                    <IconButton color='inherit' edge='end' onClick = {() => setOpenCommentDialogue(true)} >
+                        <AddCommentIcon/>
+                    </IconButton>
+                </Toolbar>
+            </AppBar>
+            <div className={classes.toolbar} />
+            <List style={{maxHeight: '90vh', minWidth: '100vw', overflow: 'auto'}}>
                 {comments}
             </List>
+            <Dialog
+                style={{zIndex: 2401}}
+                fullWidth
+                open={openCommentDialogue} onClose={() => {
+                    setOpenCommentDialogue(false);
+                }}
+                TransitionComponent={Transition}>
+                <Grid direction='column' container display='flex' alignItems='center'>
+                    <div className={classes.commentBox}>
+                        <div>
+                            <TextField value={username}
+                                inputProps={{ maxLength: 10 }}
+                                label='Username'
+                                required
+                                fullWidth
+                                onChange={(e) => {
+                                    handleUsername(e);
+                            }}
+                            />
+                        </div>
+                        <div>
+                            <TextField value={timestamp}
+                                inputProps={{ maxLength: 5 }}
+                                label='Timestamp'
+                                required
+                                fullWidth
+                                onChange={(e) => {
+                                    handleTimestamp(e);
+                                }}
+                            />
+                        </div>
+                        <div>
+                            <TextField value={content}
+                                inputProps={{ maxLength: 250 }}
+                                label='Comment'
+                                required
+                                fullWidth
+                                multiline
+                                rows={5}
+                                onChange={(e) => {
+                                    handleContent(e);
+                                }}
+                            />
+                        </div>
+                        <div>
+                            <Button onClick={handleCommentSubmit} 
+                                disabled={!buttonDisabled}
+                                variant="contained"
+                                color="primary"
+                                fullWidth
+                            >
+                                Submit Comment
+                            </Button>
+                        </div>
+                    </div>
+                </Grid>
+            </Dialog>
         </div>
     );
 }
