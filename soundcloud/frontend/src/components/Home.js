@@ -18,6 +18,8 @@ import {
 
 import AddCommentIcon from '@material-ui/icons/AddComment';
 
+import Waveform from './Waveform';
+
 const axios = require('axios');
 
 const useStyles = makeStyles((theme) => ({
@@ -88,28 +90,23 @@ function Home() {
                             </Avatar>
                             <ListItemText 
                                 primary={
-                                    <div>
-                                        <Typography noWrap>
-                                            {comment.username} at {comment.timestamp}
-                                        </Typography>  
-                                    </div>
+                                    <Typography noWrap>
+                                        {comment.username} at {comment.timestamp}
+                                    </Typography>  
+                                    
                                 }
                                 secondary={
-                                    <div>
-                                        <Typography className={classes.listItem}>
-                                            {comment.content}
-                                        </Typography>
-                                    </div>
+                                    <Typography className={classes.listItem}>
+                                        {comment.content}
+                                    </Typography>
                                 } 
                             />
                             <ListItemText
                                 style={{display:'flex', justifyContent:'flex-end'}}
                                 primary={
-                                    <div>
-                                        <Typography>
-                                            {comment.date_created}
-                                        </Typography>
-                                    </div>
+                                    <Typography>
+                                        {comment.date_created}
+                                    </Typography>
                                 }
                             />
                         </ListItem>
@@ -135,9 +132,10 @@ function Home() {
                 </Toolbar>
             </AppBar>
             <div className={classes.toolbar} />
-            <List style={{maxHeight: '90vh', minWidth: '100vw', overflow: 'auto'}}>
+            <List style={{maxHeight: '50vh', minWidth: '100vw', overflow: 'auto'}}>
                 {comments}
             </List>
+            <Waveform/>
             <Dialog
                 style={{zIndex: 2401}}
                 fullWidth
