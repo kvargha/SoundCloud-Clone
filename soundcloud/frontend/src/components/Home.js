@@ -40,6 +40,9 @@ const useStyles = makeStyles((theme) => ({
             backgroundColor: 'orangered',
         },
     },
+    commentIcon: {
+        color: 'orangered',
+    }
 }));
 
 // https://material-ui.com/components/dialogs/#dialog
@@ -133,7 +136,7 @@ function Home() {
                     <Typography>Soundcloud</Typography>
                     <Typography variant='h6' style={{flexGrow: 1}}>
                     </Typography>
-                    <IconButton color='inherit' edge='end' onClick = {() => setOpenCommentDialogue(true)} >
+                    <IconButton color='inherit' classes={{ root: classes.commentIcon}} edge='end' onClick = {() => setOpenCommentDialogue(true)} >
                         <AddCommentIcon/>
                     </IconButton>
                 </Toolbar>

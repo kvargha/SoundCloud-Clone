@@ -51,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
     },
     songInfo: {
         width: '10vw',
-        marginRight: '10px',
+        marginRight: '100px',
         marginLeft: '10px',
         position: 'relative'
     },
