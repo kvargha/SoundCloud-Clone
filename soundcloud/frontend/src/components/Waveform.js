@@ -86,8 +86,7 @@ const useStyles = makeStyles((theme) => ({
     },
     volumeSlider: {
         position: 'absolute',
-        bottom: 0,
-        marginBottom: '10px',
+        bottom: 5,
     }
 }));
 
