@@ -49,9 +49,15 @@ const useStyles = makeStyles((theme) => ({
         maxHeight: '30vh',
         background: 'linear-gradient(135deg, rgb(151, 136, 114) 0%, rgb(35, 28, 26) 100%)'
     },
-    songInfo: {
+    songInfoDesktop: {
         width: '10vw',
         marginRight: '90px',
+        marginLeft: '10px',
+        position: 'relative'
+    },
+    songInfoMobile: {
+        width: '20vw',
+        marginRight: '50px',
         marginLeft: '10px',
         position: 'relative'
     },
@@ -136,7 +142,7 @@ export default function Waveform() {
 
     return (
         <div className = {classes.waveFormContainer}>
-            <div className = {classes.songInfo}> 
+            <div className = {window.innerWidth >= 1200 ? classes.songInfoDesktop : classes.songInfoMobile}> 
                 <Typography align='center' className={classes.artist}>Noisestorm</Typography>
                 <Typography align='center' className={classes.songName}>Crab Rave</Typography>
                 <IconButton
