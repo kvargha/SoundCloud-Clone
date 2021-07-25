@@ -66,6 +66,8 @@ function Home() {
     const [comments, setComments] = useState([]);
     const [openCommentDialogue, setOpenCommentDialogue] = useState(false);
     const [currentTimeStamp, setCurrentTimeStamp] = useState('00:00'); 
+    
+    const [songTimeStamp, setSongTimeStamp] = useState(0);
 
     const classes = useStyles();
 
@@ -103,6 +105,7 @@ function Home() {
     const changeCommentTimeStamp = (timestamp) => {
         const splitTimeStamp = timestamp.split(':').map(Number);
         const totalSeconds = splitTimeStamp[0] * 60 + splitTimeStamp[1]; 
+        setSongTimeStamp(totalSeconds);
     };
 
     useEffect(() => {
@@ -155,7 +158,8 @@ function Home() {
     return (
         <div>
             <SharedContext.Provider value= {{
-                currentTimeStamp, setCurrentTimeStamp
+                currentTimeStamp, setCurrentTimeStamp,
+                songTimeStamp, setSongTimeStamp
             }}>
             
             <AppBar position='fixed' style={{background: '#333'}}>

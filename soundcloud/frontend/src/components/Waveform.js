@@ -99,7 +99,8 @@ function Waveform() {
     const [playing, setPlay] = useState(false);
     const [volume, setVolume] = useState(0.5);
     const {currentTimeStamp, setCurrentTimeStamp} = useContext(SharedContext);
-
+    const {songTimeStamp} = useContext(SharedContext);
+    
     const thumbnail = 'http://localhost:8000/static/thumbnail.jpeg';
     
     const classes = useStyles();
@@ -122,6 +123,8 @@ function Waveform() {
         console.log(seconds);
     };
 
+
+
     // create new WaveSurfer instance
     // On component mount and when url changes
     useEffect(() => {
@@ -131,7 +134,6 @@ function Waveform() {
         wavesurfer.current = WaveSurfer.create(options);
         
         wavesurfer.current.load('static/song.mp3');
-
         wavesurfer.current.on('ready', function() {
             // https://wavesurfer-js.org/docs/methods.html 
 
@@ -139,17 +141,18 @@ function Waveform() {
             if (wavesurfer.current) {
                 wavesurfer.current.setVolume(volume);
                 setVolume(volume);
+                wavesurfer.current.skip(songTimeStamp);
             }
         });
 
         wavesurfer.current.on('ready', updateTimer);
         wavesurfer.current.on('audioprocess', updateTimer);
         wavesurfer.current.on('seek', updateTimer);
-
+        
         // Removes events, elements and disconnects Web Audio nodes.
         // when component unmount
         return () => wavesurfer.current.destroy();
-    }, []);
+    }, [songTimeStamp]);
 
     const handlePlayPause = () => {
         setPlay(!playing);
