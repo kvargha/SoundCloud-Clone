@@ -17,6 +17,7 @@ import {
 } from '@material-ui/core/';
 
 import AddCommentIcon from '@material-ui/icons/AddComment';
+import ChatBubbleIcon from '@material-ui/icons/ChatBubble';
 
 import Waveform from './Waveform';
 
@@ -50,6 +51,9 @@ const useStyles = makeStyles((theme) => ({
         padding: 0,
         minHeight: 0,
         minWidth: 0
+    },
+    numComments: {
+        color: 'grey'
     }
 }));
 
@@ -64,6 +68,7 @@ function Home() {
     const [content, setContent] = useState('');
     const [buttonDisabled, setButtonDisabled] = useState(true);
     const [comments, setComments] = useState([]);
+    const [numComments, setNumComments] = useState(0);
     const [openCommentDialogue, setOpenCommentDialogue] = useState(false);
     const [currentTimeStamp, setCurrentTimeStamp] = useState('00:00'); 
     
@@ -71,6 +76,8 @@ function Home() {
     const [songDuration, setSongDuration] = useState(0);
     const [invalidTimeStamp, setInvalidTimeStamp] = useState(false);
     const [timestampHelperText, setTimestampHelperText] = useState('');
+
+
     const classes = useStyles();
 
     const handleCommentSubmit = () => {
@@ -116,9 +123,7 @@ function Home() {
             setInvalidTimeStamp(false);
             setTimestampHelperText('');
         }
-
         setTimestamp(timestampInput);
-        
     };
 
     const handleContent = (e) => {
@@ -140,9 +145,10 @@ function Home() {
         axios.get('/api/get')
             .then((res) => {
                 // Populate the comments section
+                setNumComments(res.data.length);
                 const commentList = res.data.map((comment) => {
                     return(
-                        <ListItem key={comment.id}>
+                        <ListItem divider key={comment.id}>
                             <Avatar style={{marginRight:'20px'}}>
                                 {comment.username[0].toUpperCase()}
                             </Avatar>
@@ -203,8 +209,11 @@ function Home() {
             <div className={classes.toolbar} />
 
             <Waveform/>
-
-            <List style={{maxHeight: '70vh', minWidth: '100vw', overflow: 'auto'}}>
+            <div style = {{marginLeft: '20px', marginTop: '10px', display: 'flex'}}>
+                <ChatBubbleIcon classes={{ root: classes.numComments}}/>
+                <Typography style = {{marginLeft: '5px'}} classes={{ root: classes.numComments}}>{numComments} comments</Typography>
+            </div>
+            <List style={{maxHeight: '65vh', minWidth: '100vw', overflow: 'auto'}}>
                 {comments}
             </List>
             <Dialog
