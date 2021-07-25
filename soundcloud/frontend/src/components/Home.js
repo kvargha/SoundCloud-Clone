@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef, forwardRef} from 'react';
+import React, {useState, useEffect, forwardRef} from 'react';
 import {
     List, 
     ListItem,
@@ -66,9 +66,6 @@ function Home() {
     const [comments, setComments] = useState([]);
     const [openCommentDialogue, setOpenCommentDialogue] = useState(false);
     const [currentTimeStamp, setCurrentTimeStamp] = useState('00:00'); 
-
-    const waveformRef = useRef(null);
-    const wavesurfer = useRef(null);
 
     const classes = useStyles();
 
