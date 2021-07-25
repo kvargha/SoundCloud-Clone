@@ -1,5 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
-import WaveSurfer from "wavesurfer.js";
+import React, { useEffect, useRef, useState, useContext } from 'react';
+import SharedContext from './SharedContext';
+import WaveSurfer from 'wavesurfer.js';
 
 import {
     IconButton,
@@ -16,9 +17,9 @@ import VolumeUp from '@material-ui/icons/VolumeUp';
 
 const formWaveSurferOptions = ref => ({
     container: ref,
-    waveColor: "#eee",
-    progressColor: "OrangeRed",
-    cursorColor: "OrangeRed",
+    waveColor: '#eee',
+    progressColor: 'OrangeRed',
+    cursorColor: 'OrangeRed',
     barWidth: 3,
     barRadius: 3,
     responsive: true,
@@ -43,6 +44,7 @@ const useStyles = makeStyles((theme) => ({
         color: 'orangered',
         display: 'block',
         margin: 'auto',
+        marginBottom: '20px'
     },
     waveFormContainer: {
         display: 'flex',
@@ -96,10 +98,25 @@ export default function Waveform() {
     const wavesurfer = useRef(null);
     const [playing, setPlay] = useState(false);
     const [volume, setVolume] = useState(0.5);
+    const {currentTimeStamp, setCurrentTimeStamp} = useContext(SharedContext);
 
     const thumbnail = 'http://localhost:8000/static/thumbnail.jpeg';
     
     const classes = useStyles();
+
+    function secondsToTimestamp(timeget){
+        if (!timeget) {return '00:00';}
+    
+        var min = Math.floor(timeget / 60);
+        var sec = Math.ceil(timeget) % 60;
+    
+        return (min < 10 ? '0' : '') + min + ':' + (sec < 10 ? '0' : '') + sec;
+    };
+
+    function updateTimer() {
+        var formattedTime = secondsToTimestamp(wavesurfer.current.getCurrentTime());
+        setCurrentTimeStamp(formattedTime);
+    };
 
     // create new WaveSurfer instance
     // On component mount and when url changes
@@ -111,17 +128,19 @@ export default function Waveform() {
         
         wavesurfer.current.load('static/song.mp3');
 
-        wavesurfer.current.on("ready", function() {
-        // https://wavesurfer-js.org/docs/methods.html
-        // wavesurfer.current.play();
-        // setPlay(true);
+        wavesurfer.current.on('ready', function() {
+            // https://wavesurfer-js.org/docs/methods.html 
 
-        // make sure object stillavailable when file loaded
-        if (wavesurfer.current) {
-            wavesurfer.current.setVolume(volume);
-            setVolume(volume);
-        }
+            // make sure object stillavailable when file loaded
+            if (wavesurfer.current) {
+                wavesurfer.current.setVolume(volume);
+                setVolume(volume);
+            }
         });
+
+        wavesurfer.current.on('ready', updateTimer);
+        wavesurfer.current.on('audioprocess', updateTimer);
+        wavesurfer.current.on('seek', updateTimer);
 
         // Removes events, elements and disconnects Web Audio nodes.
         // when component unmount
@@ -130,7 +149,6 @@ export default function Waveform() {
 
     const handlePlayPause = () => {
         setPlay(!playing);
-        console.log(wavesurfer.current.getCurrentTime())
         wavesurfer.current.playPause();
     };
 
@@ -154,6 +172,7 @@ export default function Waveform() {
                 >
                     {!playing ? <PlayCircleFilledIcon style={{ fontSize: 80 }}/> : <PauseCircleFilledIcon style={{ fontSize: 80 }}/>}
                 </IconButton>
+                <Typography align='center'>{currentTimeStamp}</Typography>
                 <Grid container spacing={2} className = {classes.volumeSlider}>
                     <Grid item>
                         <VolumeDown />
@@ -165,7 +184,7 @@ export default function Waveform() {
                             value={volume}
                             step={0.025}
                             onChange={onVolumeChange}
-                            aria-labelledby="continuous-slider"
+                            aria-labelledby='continuous-slider'
                             classes={{
                                 root: classes.root,
                                 thumb: classes.thumb,
@@ -178,7 +197,7 @@ export default function Waveform() {
                     </Grid>
                 </Grid>
             </div>
-            <div id="waveform" ref={waveformRef} className = {classes.waveForm}/>
+            <div id='waveform' ref={waveformRef} className = {classes.waveForm}/>
             <div>
                 <img src = {thumbnail} className = {classes.thumbnail}/>
             </div>

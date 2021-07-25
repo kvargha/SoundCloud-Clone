@@ -20,6 +20,8 @@ import AddCommentIcon from '@material-ui/icons/AddComment';
 
 import Waveform from './Waveform';
 
+import SharedContext from './SharedContext';
+
 const axios = require('axios');
 
 const useStyles = makeStyles((theme) => ({
@@ -57,6 +59,7 @@ function Home() {
     const [buttonDisabled, setButtonDisabled] = useState(true);
     const [comments, setComments] = useState([]);
     const [openCommentDialogue, setOpenCommentDialogue] = useState(false);
+    const [currentTimeStamp, setCurrentTimeStamp] = useState('00:00');
 
     const classes = useStyles();
 
@@ -86,7 +89,10 @@ function Home() {
         setContent(e.target.value);
     };
 
-   
+    const handleNewComment = () => {
+        setOpenCommentDialogue(true);
+        setTimestamp(currentTimeStamp);
+    };
 
     useEffect(() => {
         axios.get('/api/get')
@@ -131,12 +137,15 @@ function Home() {
 
     return (
         <div>
+            <SharedContext.Provider value= {{
+                currentTimeStamp, setCurrentTimeStamp
+            }}>
+            
             <AppBar position='fixed' style={{background: '#333'}}>
                 <Toolbar>
                     <Typography>Soundcloud</Typography>
-                    <Typography variant='h6' style={{flexGrow: 1}}>
-                    </Typography>
-                    <IconButton color='inherit' classes={{ root: classes.commentIcon}} edge='end' onClick = {() => setOpenCommentDialogue(true)} >
+                    <Typography variant='h6' style={{flexGrow: 1}}/>
+                    <IconButton color='inherit' classes={{ root: classes.commentIcon}} edge='end' onClick = {() => handleNewComment()} >
                         <AddCommentIcon/>
                     </IconButton>
                 </Toolbar>
@@ -156,7 +165,8 @@ function Home() {
                 <Grid direction='column' container display='flex' alignItems='center'>
                     <div className={classes.commentBox}>
                         <div>
-                            <TextField value={username}
+                            <TextField
+                                value={username}
                                 inputProps={{ maxLength: 10 }}
                                 label='Username'
                                 required
@@ -167,7 +177,8 @@ function Home() {
                             />
                         </div>
                         <div>
-                            <TextField value={timestamp}
+                            <TextField
+                                value={timestamp}
                                 inputProps={{ maxLength: 5 }}
                                 label='Timestamp'
                                 required
@@ -178,7 +189,8 @@ function Home() {
                             />
                         </div>
                         <div>
-                            <TextField value={content}
+                            <TextField
+                                value={content}
                                 inputProps={{ maxLength: 250 }}
                                 label='Comment'
                                 required
@@ -206,6 +218,7 @@ function Home() {
                     </div>
                 </Grid>
             </Dialog>
+            </SharedContext.Provider>
         </div>
     );
 }
