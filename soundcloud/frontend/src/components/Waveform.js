@@ -99,6 +99,7 @@ function Waveform() {
     const [playing, setPlay] = useState(false);
     const [volume, setVolume] = useState(0.5);
     const {currentTimeStamp, setCurrentTimeStamp} = useContext(SharedContext);
+    const {setSongDuration} = useContext(SharedContext);
     const {songTimeStamp} = useContext(SharedContext);
     
     const thumbnail = 'http://localhost:8000/static/thumbnail.jpeg';
@@ -119,10 +120,15 @@ function Waveform() {
         setCurrentTimeStamp(formattedTime);
     };
 
-    const changeTimeStamp = (seconds) => {
-        console.log(seconds);
+    const handlePlayPause = () => {
+        setPlay(!playing);
+        wavesurfer.current.playPause();
     };
 
+    const onVolumeChange = (event, newVolume) => {
+        setVolume(newVolume);
+        wavesurfer.current.setVolume(newVolume || 1);
+    };
 
 
     // create new WaveSurfer instance
@@ -139,6 +145,7 @@ function Waveform() {
 
             // make sure object stillavailable when file loaded
             if (wavesurfer.current) {
+                setSongDuration(wavesurfer.current.getDuration());
                 wavesurfer.current.setVolume(volume);
                 setVolume(volume);
                 wavesurfer.current.skip(songTimeStamp);
@@ -153,16 +160,6 @@ function Waveform() {
         // when component unmount
         return () => wavesurfer.current.destroy();
     }, [songTimeStamp]);
-
-    const handlePlayPause = () => {
-        setPlay(!playing);
-        wavesurfer.current.playPause();
-    };
-
-    const onVolumeChange = (event, newVolume) => {
-        setVolume(newVolume);
-        wavesurfer.current.setVolume(newVolume || 1);
-    };
 
     return (
         <div className = {classes.waveFormContainer}>

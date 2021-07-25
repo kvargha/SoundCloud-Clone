@@ -68,8 +68,9 @@ function Home() {
     const [currentTimeStamp, setCurrentTimeStamp] = useState('00:00'); 
     
     const [songTimeStamp, setSongTimeStamp] = useState(0);
+    const [songDuration, setSongDuration] = useState(0);
     const [invalidTimeStamp, setInvalidTimeStamp] = useState(false);
-    const [timestampHelperText, setTimestampHelperText] = useState('')
+    const [timestampHelperText, setTimestampHelperText] = useState('');
     const classes = useStyles();
 
     const handleCommentSubmit = () => {
@@ -90,20 +91,33 @@ function Home() {
         setUsername(e.target.value);
     };
 
+    function secondsToTimestamp(timeget){
+        if (!timeget) {return '00:00';}
+    
+        var min = Math.floor(timeget / 60);
+        var sec = Math.ceil(timeget) % 60;
+    
+        return (min < 10 ? '0' : '') + min + ':' + (sec < 10 ? '0' : '') + sec;
+    };
+
+
     const handleTimestamp = (e) => {
-        let reg = new RegExp('[0-5][0-9]:[0-5][0-9]').test(e.target.value);
+        const timestampInput = e.target.value;
+        let reg = new RegExp('[0-5][0-9]:[0-5][0-9]').test(timestampInput);
         if (reg == false) {
-            console.log('test1')
             setInvalidTimeStamp(true);
             setTimestampHelperText('Invalid Timestamp');
         }
+        else if (timestampInput > secondsToTimestamp(songDuration)) {
+            setInvalidTimeStamp(true);
+            setTimestampHelperText('Timestamp exceeds song duraiton');
+        }
         else {
-            console.log('test2')
             setInvalidTimeStamp(false);
             setTimestampHelperText('');
         }
 
-        setTimestamp(e.target.value);
+        setTimestamp(timestampInput);
         
     };
 
@@ -173,7 +187,8 @@ function Home() {
         <div>
             <SharedContext.Provider value= {{
                 currentTimeStamp, setCurrentTimeStamp,
-                songTimeStamp, setSongTimeStamp
+                songTimeStamp, setSongTimeStamp,
+                setSongDuration
             }}>
             
             <AppBar position='fixed' style={{background: '#333'}}>
