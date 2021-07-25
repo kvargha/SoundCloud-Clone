@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef, forwardRef} from 'react';
 import {
     List, 
     ListItem,
@@ -44,11 +44,17 @@ const useStyles = makeStyles((theme) => ({
     },
     commentIcon: {
         color: 'orangered',
+    },
+    commentTimeStamp: {
+        display: 'inline-block',
+        padding: 0,
+        minHeight: 0,
+        minWidth: 0
     }
 }));
 
 // https://material-ui.com/components/dialogs/#dialog
-const Transition = React.forwardRef(function Transition(props, ref) {
+const Transition = forwardRef(function Transition(props, ref) {
     return <Slide direction='up' ref={ref} {...props} />;
 });
 
@@ -59,7 +65,10 @@ function Home() {
     const [buttonDisabled, setButtonDisabled] = useState(true);
     const [comments, setComments] = useState([]);
     const [openCommentDialogue, setOpenCommentDialogue] = useState(false);
-    const [currentTimeStamp, setCurrentTimeStamp] = useState('00:00');
+    const [currentTimeStamp, setCurrentTimeStamp] = useState('00:00'); 
+
+    const waveformRef = useRef(null);
+    const wavesurfer = useRef(null);
 
     const classes = useStyles();
 
@@ -94,6 +103,11 @@ function Home() {
         setTimestamp(currentTimeStamp);
     };
 
+    const changeCommentTimeStamp = (timestamp) => {
+        const splitTimeStamp = timestamp.split(':').map(Number);
+        const totalSeconds = splitTimeStamp[0] * 60 + splitTimeStamp[1]; 
+    };
+
     useEffect(() => {
         axios.get('/api/get')
             .then((res) => {
@@ -107,7 +121,13 @@ function Home() {
                             <ListItemText 
                                 primary={
                                     <Typography noWrap>
-                                        {comment.username} at {comment.timestamp}
+                                        {comment.username} at
+                                        <Button
+                                            style = {{marginLeft: '3px'}}
+                                            classes={{root: classes.commentTimeStamp}}
+                                            onClick = {() => changeCommentTimeStamp(comment.timestamp)}>
+                                            {comment.timestamp}
+                                        </Button>
                                     </Typography>  
                                     
                                 }
@@ -151,7 +171,9 @@ function Home() {
                 </Toolbar>
             </AppBar>
             <div className={classes.toolbar} />
+
             <Waveform/>
+
             <List style={{maxHeight: '70vh', minWidth: '100vw', overflow: 'auto'}}>
                 {comments}
             </List>

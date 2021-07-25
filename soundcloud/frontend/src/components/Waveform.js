@@ -93,7 +93,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-export default function Waveform() {
+function Waveform() {
     const waveformRef = useRef(null);
     const wavesurfer = useRef(null);
     const [playing, setPlay] = useState(false);
@@ -116,6 +116,10 @@ export default function Waveform() {
     function updateTimer() {
         var formattedTime = secondsToTimestamp(wavesurfer.current.getCurrentTime());
         setCurrentTimeStamp(formattedTime);
+    };
+
+    const changeTimeStamp = (seconds) => {
+        console.log(seconds);
     };
 
     // create new WaveSurfer instance
@@ -204,3 +208,5 @@ export default function Waveform() {
         </div>
     );
 }
+
+export default Waveform;
