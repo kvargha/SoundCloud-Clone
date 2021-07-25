@@ -68,7 +68,8 @@ function Home() {
     const [currentTimeStamp, setCurrentTimeStamp] = useState('00:00'); 
     
     const [songTimeStamp, setSongTimeStamp] = useState(0);
-
+    const [invalidTimeStamp, setInvalidTimeStamp] = useState(false);
+    const [timestampHelperText, setTimestampHelperText] = useState('')
     const classes = useStyles();
 
     const handleCommentSubmit = () => {
@@ -90,7 +91,20 @@ function Home() {
     };
 
     const handleTimestamp = (e) => {
+        let reg = new RegExp('[0-5][0-9]:[0-5][0-9]').test(e.target.value);
+        if (reg == false) {
+            console.log('test1')
+            setInvalidTimeStamp(true);
+            setTimestampHelperText('Invalid Timestamp');
+        }
+        else {
+            console.log('test2')
+            setInvalidTimeStamp(false);
+            setTimestampHelperText('');
+        }
+
         setTimestamp(e.target.value);
+        
     };
 
     const handleContent = (e) => {
@@ -151,7 +165,7 @@ function Home() {
                 setComments(commentList);
             });
 
-        setButtonDisabled(username.length > 0 && timestamp.length > 0 && content.length > 0);
+        setButtonDisabled(username.length > 0 && !invalidTimeStamp && content.length > 0);
     }, [username, timestamp, content, comments]);
       
 
@@ -203,6 +217,8 @@ function Home() {
                             <TextField
                                 value={timestamp}
                                 inputProps={{ maxLength: 5 }}
+                                error={invalidTimeStamp}
+                                helperText={timestampHelperText}
                                 label='Timestamp'
                                 required
                                 fullWidth

@@ -4,7 +4,6 @@ services:
     web:
         build: .
         command: bash -c "
-            pip install -r requirements.txt &&
             python soundcloud/manage.py makemigrations &&
             python soundcloud/manage.py migrate &&
             python soundcloud/manage.py runserver 0.0.0.0:8000"
