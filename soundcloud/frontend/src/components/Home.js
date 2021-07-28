@@ -66,7 +66,7 @@ function Home() {
     const [username, setUsername] = useState('');
     const [timestamp, setTimestamp] = useState('');
     const [content, setContent] = useState('');
-    const [buttonDisabled, setButtonDisabled] = useState(true);
+    const [buttonEnabled, setButtonEnabled] = useState(false);
     const [comments, setComments] = useState([]);
     const [numComments, setNumComments] = useState(0);
     const [openCommentDialogue, setOpenCommentDialogue] = useState(false);
@@ -96,6 +96,7 @@ function Home() {
 
     const handleUsername = (e) => {
         setUsername(e.target.value);
+        setButtonEnabled(e.target.value.length > 0 && !invalidTimeStamp && content.length > 0);
     };
 
     function secondsToTimestamp(timeget){
@@ -111,23 +112,29 @@ function Home() {
     const handleTimestamp = (e) => {
         const timestampInput = e.target.value;
         let reg = new RegExp('[0-5][0-9]:[0-5][0-9]').test(timestampInput);
+        let invalidTimeStamp = false
         if (reg == false) {
             setInvalidTimeStamp(true);
             setTimestampHelperText('Invalid Timestamp');
+            invalidTimeStamp = true;
         }
         else if (timestampInput > secondsToTimestamp(songDuration)) {
             setInvalidTimeStamp(true);
             setTimestampHelperText('Timestamp exceeds song duraiton');
+            invalidTimeStamp = true;
         }
         else {
             setInvalidTimeStamp(false);
             setTimestampHelperText('');
+            invalidTimeStamp = false;
         }
         setTimestamp(timestampInput);
+        setButtonEnabled(username.length > 0 && !invalidTimeStamp && content.length > 0);
     };
 
     const handleContent = (e) => {
         setContent(e.target.value);
+        setButtonEnabled(username.length > 0 && !invalidTimeStamp && e.target.value.length > 0);
     };
 
     const handleNewComment = () => {
@@ -189,9 +196,7 @@ function Home() {
                 });
                 setComments(commentList);
             });
-
-        setButtonDisabled(username.length > 0 && !invalidTimeStamp && content.length > 0);
-    }, [username, timestamp, content, comments]);
+    }, [openCommentDialogue]);
       
 
     return (
@@ -272,7 +277,7 @@ function Home() {
                         </div>
                         <div>
                             <Button onClick={handleCommentSubmit} 
-                                disabled={!buttonDisabled}
+                                disabled={!buttonEnabled}
                                 variant='contained'
                                 color='primary'
                                 fullWidth
