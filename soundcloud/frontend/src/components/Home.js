@@ -141,6 +141,11 @@ function Home() {
         setSongTimeStamp(totalSeconds);
     };
 
+    const formatDate = (dateString) => {
+        const options = { year: "numeric", month: "long", day: "numeric" }
+        return new Date(dateString).toLocaleDateString(undefined, options) + ' ' + new Date(dateString).toLocaleTimeString()
+    }
+
     useEffect(() => {
         axios.get('/api/get')
             .then((res) => {
@@ -175,7 +180,7 @@ function Home() {
                                 style={{display:'flex', justifyContent:'flex-end'}}
                                 primary={
                                     <Typography>
-                                        {comment.date_created}
+                                        {formatDate(comment.date_created)}
                                     </Typography>
                                 }
                             />
