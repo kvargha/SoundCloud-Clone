@@ -77,7 +77,6 @@ function Home() {
     const [invalidTimeStamp, setInvalidTimeStamp] = useState(false);
     const [timestampHelperText, setTimestampHelperText] = useState('');
 
-
     const classes = useStyles();
 
     const handleCommentSubmit = () => {
@@ -204,7 +203,8 @@ function Home() {
             <SharedContext.Provider value= {{
                 currentTimeStamp, setCurrentTimeStamp,
                 songTimeStamp, setSongTimeStamp,
-                setSongDuration
+                songDuration, setSongDuration,
+                openCommentDialogue
             }}>
             
             <AppBar position='fixed' style={{background: '#333'}}>
@@ -219,6 +219,7 @@ function Home() {
             <div className={classes.toolbar} />
 
             <Waveform/>
+
             <div style = {{marginLeft: '20px', marginTop: '10px', display: 'flex'}}>
                 <ChatBubbleIcon classes={{ root: classes.numComments}}/>
                 <Typography style = {{marginLeft: '5px'}} classes={{ root: classes.numComments}}>{numComments} comments</Typography>

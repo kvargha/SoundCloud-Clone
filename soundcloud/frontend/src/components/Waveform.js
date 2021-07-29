@@ -15,6 +15,8 @@ import Slider from '@material-ui/core/Slider';
 import VolumeDown from '@material-ui/icons/VolumeDown';
 import VolumeUp from '@material-ui/icons/VolumeUp';
 
+import WaveformComments from './WaveformComments';
+
 const formWaveSurferOptions = ref => ({
     container: ref,
     waveColor: '#eee',
@@ -99,8 +101,11 @@ function Waveform() {
     const [playing, setPlay] = useState(false);
     const [volume, setVolume] = useState(0.5);
     const {currentTimeStamp, setCurrentTimeStamp} = useContext(SharedContext);
-    const {setSongDuration} = useContext(SharedContext);
+    const {songDuration, setSongDuration} = useContext(SharedContext);
     const {songTimeStamp} = useContext(SharedContext);
+    const {openCommentDialogue} = useContext(SharedContext);
+    const [margin, setMargin] = useState(0);
+    const [windowResize, setWindowResize] = useState(false);
     
     const thumbnail = 'http://localhost:8000/static/thumbnail.jpeg';
     
@@ -130,6 +135,20 @@ function Waveform() {
         wavesurfer.current.setVolume(newVolume || 1);
     };
 
+    const handleResize = () => {
+        setWindowResize(!windowResize);
+        // Get margin
+        window.innerWidth >= 1200 ? classes.songInfoDesktop : classes.songInfoMobile
+        if (window.innerWidth >= 1200) {
+            // Desktop
+            setMargin(80)
+        } 
+        else {
+            // Mobile
+            setMargin(40)
+        }
+    }
+
 
     // create new WaveSurfer instance
     // On component mount and when url changes
@@ -155,6 +174,18 @@ function Waveform() {
         wavesurfer.current.on('ready', updateTimer);
         wavesurfer.current.on('audioprocess', updateTimer);
         wavesurfer.current.on('seek', updateTimer);
+        window.addEventListener('resize', handleResize);
+
+        // Get margin
+        window.innerWidth >= 1200 ? classes.songInfoDesktop : classes.songInfoMobile
+        if (window.innerWidth >= 1200) {
+            // Desktop
+            setMargin(80)
+        } 
+        else {
+            // Mobile
+            setMargin(40)
+        }
         
         // Removes events, elements and disconnects Web Audio nodes.
         // when component unmount
@@ -163,48 +194,56 @@ function Waveform() {
 
     return (
         <div className = {classes.waveFormContainer}>
-            <div className = {window.innerWidth >= 1200 ? classes.songInfoDesktop : classes.songInfoMobile}> 
-                <Typography align='center' className={classes.artist}>Noisestorm</Typography>
-                <Typography align='center' className={classes.songName}>Crab Rave</Typography>
-                <IconButton
-                    color='primary'
-                    align='center'
-                    onClick = {handlePlayPause}
-                    classes={{
-                        root: classes.button,
-                    }}
-                >
-                    {!playing ? <PlayCircleFilledIcon style={{ fontSize: 80 }}/> : <PauseCircleFilledIcon style={{ fontSize: 80 }}/>}
-                </IconButton>
-                <Typography align='center'>{currentTimeStamp}</Typography>
-                <Grid container spacing={2} className = {classes.volumeSlider}>
-                    <Grid item>
-                        <VolumeDown />
+            <SharedContext.Provider value= {{
+                songDuration,
+                openCommentDialogue,
+                margin,
+                windowResize
+            }}>
+                <div id='songInfo' className = {window.innerWidth >= 1200 ? classes.songInfoDesktop : classes.songInfoMobile}> 
+                    <Typography align='center' className={classes.artist}>Noisestorm</Typography>
+                    <Typography align='center' className={classes.songName}>Crab Rave</Typography>
+                    <IconButton
+                        color='primary'
+                        align='center'
+                        onClick = {handlePlayPause}
+                        classes={{
+                            root: classes.button,
+                        }}
+                    >
+                        {!playing ? <PlayCircleFilledIcon style={{ fontSize: 80 }}/> : <PauseCircleFilledIcon style={{ fontSize: 80 }}/>}
+                    </IconButton>
+                    <Typography align='center'>{currentTimeStamp}</Typography>
+                    <Grid container spacing={2} className = {classes.volumeSlider}>
+                        <Grid item>
+                            <VolumeDown />
+                        </Grid>
+                        <Grid item xs>
+                            <Slider
+                                min={0.01}
+                                max={1}
+                                value={volume}
+                                step={0.025}
+                                onChange={onVolumeChange}
+                                aria-labelledby='continuous-slider'
+                                classes={{
+                                    root: classes.root,
+                                    thumb: classes.thumb,
+                                    rail: classes.rail,
+                                }}
+                            />
+                        </Grid>
+                        <Grid item>
+                            <VolumeUp />
+                        </Grid>
                     </Grid>
-                    <Grid item xs>
-                        <Slider
-                            min={0.01}
-                            max={1}
-                            value={volume}
-                            step={0.025}
-                            onChange={onVolumeChange}
-                            aria-labelledby='continuous-slider'
-                            classes={{
-                                root: classes.root,
-                                thumb: classes.thumb,
-                                rail: classes.rail,
-                            }}
-                        />
-                    </Grid>
-                    <Grid item>
-                        <VolumeUp />
-                    </Grid>
-                </Grid>
-            </div>
-            <div id='waveform' ref={waveformRef} className = {classes.waveForm}/>
-            <div>
-                <img src = {thumbnail} className = {classes.thumbnail}/>
-            </div>
+                </div>
+                <div id='waveform' ref={waveformRef} className = {classes.waveForm}/>
+               <WaveformComments/>
+                <div>
+                    <img src = {thumbnail} className = {classes.thumbnail}/>
+                </div>
+            </SharedContext.Provider>
         </div>
     );
 }
