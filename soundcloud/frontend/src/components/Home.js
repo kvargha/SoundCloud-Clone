@@ -85,11 +85,12 @@ function Home() {
             'timestamp': timestamp,
             'content': content
         };
-
+        setButtonEnabled(false);
         axios.post('/api/post/', commentInfo)
             .then(() => {
                 setContent('');
                 setOpenCommentDialogue(false);
+                
             });
     };
 

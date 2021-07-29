@@ -65,12 +65,12 @@ function WaveformComments() {
         var songInfoElement = document.getElementById('songInfo');
         var songInfoWidth = songInfoElement.offsetWidth;
         setSongInfoWidth(songInfoWidth);
-        console.log(songInfoWidth, waveformWidth)
+        
 
         axios.get('/api/get')
             .then((res) => {
                 // Populate the waveform comments section
-                const commentList = res.data.map((comment) => {
+                const commentList = res.data.reverse().map((comment) => {
                     return(
                         <ListItem style={{marginLeft: calculateMargin(comment.timestamp)}} className={classes.listItem} key={comment.id + 'waveform'}>
                             <Tooltip title={comment.username + ': ' + comment.content}>
