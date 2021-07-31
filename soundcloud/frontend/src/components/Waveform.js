@@ -6,8 +6,12 @@ import {
     IconButton,
     Grid,
     makeStyles,
-    Typography
+    Typography,
+    useMediaQuery,
+    Hidden
 } from '@material-ui/core/';
+
+import {useTheme} from '@material-ui/core/styles';
 
 import PlayCircleFilledIcon from '@material-ui/icons/PlayCircleFilled';
 import PauseCircleFilledIcon from '@material-ui/icons/PauseCircleFilled';
@@ -46,36 +50,45 @@ const useStyles = makeStyles((theme) => ({
         color: 'orangered',
         display: 'block',
         margin: 'auto',
-        marginBottom: '20px'
+        marginBottom: '10px'
     },
-    waveFormContainer: {
+    waveFormContainerDesktop: {
         display: 'flex',
         maxHeight: '30vh',
-        background: 'linear-gradient(135deg, rgb(151, 136, 114) 0%, rgb(35, 28, 26) 100%)'
+        background: 'linear-gradient(135deg, rgb(151, 136, 114) 0%, rgb(35, 28, 26) 100%)',
+    },
+    waveFormContainerMobile: {
+        display: 'flex',
+        maxHeight: '30vh',
+        background: 'linear-gradient(135deg, rgb(151, 136, 114) 0%, rgb(35, 28, 26) 100%)',
+        justifyContent: 'center',
     },
     songInfoDesktop: {
         width: '10vw',
         marginRight: '90px',
         marginLeft: '10px',
-        position: 'relative'
+        position: 'relative',
     },
     songInfoMobile: {
-        width: '20vw',
+        width: '25vw',
         marginRight: '50px',
         marginLeft: '10px',
-        position: 'relative'
+        position: 'relative',
     },
     waveForm: {
         flexGrow: 1,
         display: 'block',
         margin: 'auto'
     },
+    waveFormHidden: {
+        display: 'none'
+    },
     thumbnail: {
-        float: 'right',
         marginTop: '10px',
         marginRight: '10px',
         marginLeft: '10px',
         maxHeight: '90%',
+        maxWidth: '90%',
     },
     artist: {
         background: 'black',
@@ -86,7 +99,7 @@ const useStyles = makeStyles((theme) => ({
     songName: {
         background: 'black',
         color: 'white',
-        marginBottom: '20px'
+        marginBottom: '10px'
     },
     volumeSlider: {
         position: 'absolute',
@@ -110,6 +123,8 @@ function Waveform() {
     const thumbnail = 'http://localhost:8000/static/thumbnail.jpeg';
     
     const classes = useStyles();
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
     function secondsToTimestamp(timeget){
         if (!timeget) {return '00:00';}
@@ -138,8 +153,7 @@ function Waveform() {
     const handleResize = () => {
         setWindowResize(!windowResize);
         // Get margin
-        window.innerWidth >= 1200 ? classes.songInfoDesktop : classes.songInfoMobile
-        if (window.innerWidth >= 1200) {
+        if (!isMobile) {
             // Desktop
             setMargin(80)
         } 
@@ -177,8 +191,7 @@ function Waveform() {
         window.addEventListener('resize', handleResize);
 
         // Get margin
-        window.innerWidth >= 1200 ? classes.songInfoDesktop : classes.songInfoMobile
-        if (window.innerWidth >= 1200) {
+        if (!isMobile) {
             // Desktop
             setMargin(80)
         } 
@@ -193,14 +206,14 @@ function Waveform() {
     }, [songTimeStamp]);
 
     return (
-        <div className = {classes.waveFormContainer}>
+        <div className = {!isMobile ? (classes.waveFormContainerDesktop) : (classes.waveFormContainerMobile)}>
             <SharedContext.Provider value= {{
                 songDuration,
                 openCommentDialogue,
                 margin,
                 windowResize
             }}>
-                <div id='songInfo' className = {window.innerWidth >= 1200 ? classes.songInfoDesktop : classes.songInfoMobile}> 
+                <div id='songInfo' className = {!isMobile ? classes.songInfoDesktop : classes.songInfoMobile}> 
                     <Typography align='center' className={classes.artist}>Noisestorm</Typography>
                     <Typography align='center' className={classes.songName}>Crab Rave</Typography>
                     <IconButton
@@ -238,8 +251,10 @@ function Waveform() {
                         </Grid>
                     </Grid>
                 </div>
-                <div id='waveform' ref={waveformRef} className = {classes.waveForm}/>
-               <WaveformComments/>
+
+                <WaveformComments/> 
+                <div id='waveform' ref={waveformRef} className = { !isMobile ? (classes.waveForm) : (classes.waveFormHidden)}/>
+
                 <div>
                     <img src = {thumbnail} className = {classes.thumbnail}/>
                 </div>

@@ -5,12 +5,12 @@ import {
     List,
     ListItem,
     Avatar,
-    IconButton,
-    Grid,
     makeStyles,
-    Typography,
-    Tooltip
+    Tooltip,
+    useMediaQuery,
 } from '@material-ui/core/';
+
+import {useTheme} from '@material-ui/core/styles';
 
 const axios = require('axios');
 
@@ -25,7 +25,9 @@ const useStyles = makeStyles((theme) => ({
     listItem: {
         position: 'absolute',
     },
-  
+    hidden: {
+        display: 'none',
+    },  
 }));
 
 
@@ -41,6 +43,8 @@ function WaveformComments() {
     const {windowResize} = useContext(SharedContext);
 
     const classes = useStyles();
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
     function timestampToSeconds(timestamp){
         const splitTimeStamp = timestamp.split(':').map(Number);
@@ -52,19 +56,24 @@ function WaveformComments() {
             return 0;
         }
         else {
-            console.log(timestamp, timestampToSeconds(timestamp), songDuration, waveformWidth, (timestampToSeconds(timestamp)/songDuration) * waveformWidth)
             return ((timestampToSeconds(timestamp)/songDuration) * waveformWidth);
         }
     };
 
-    useEffect(() => {
+    const handleResize = () => {
         var waveformElement = document.getElementById('waveform');
         var waveformWidth = waveformElement.offsetWidth;
         setWaveformWidth(waveformWidth);
 
         var songInfoElement = document.getElementById('songInfo');
         var songInfoWidth = songInfoElement.offsetWidth;
-        setSongInfoWidth(songInfoWidth);
+        setSongInfoWidth(songInfoWidth); 
+    }
+
+    useEffect(() => {
+        
+        window.addEventListener('resize', handleResize);
+        window.addEventListener('load', handleResize);
         
 
         axios.get('/api/get')
@@ -84,10 +93,10 @@ function WaveformComments() {
                 setWaveformComments(commentList);
             });
         
-    }, [songDuration, openCommentDialogue, waveformWidth, windowResize, margin]);
+    }, [songDuration, openCommentDialogue, waveformWidth, windowResize, margin, isMobile, songInfoWidth]);
 
     return (
-        <List className={classes.list} style={{marginLeft: songInfoWidth + margin}}>
+        <List className={!isMobile ? (classes.list) : (classes.hidden)} style={{marginLeft: songInfoWidth + margin}}>
                 {waveformComments}
         </List>
         

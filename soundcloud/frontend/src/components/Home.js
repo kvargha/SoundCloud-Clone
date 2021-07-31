@@ -32,9 +32,28 @@ const useStyles = makeStyles((theme) => ({
         marginBottom: '10px',
         width: '90%',
     },
+    commentSection: {
+        maxHeight: '65vh',
+        minWidth: '100vw',
+        maxWidth: '100vw',
+    },
+    addComment: {
+        marginLeft: '20px',
+        marginTop: '10px',
+        display: 'flex'
+    },
     listItem: {
         width: '60vw',
-        wordWrap: 'break-word'
+    },
+    row: {
+        alignContent: 'left',
+        display: 'flex',
+    },
+    td: {
+        flex: '1',
+    },
+    tdR: {
+        textAlign: 'right',
     },
     button: {
         marginTop: '10px',
@@ -112,7 +131,7 @@ function Home() {
     const handleTimestamp = (e) => {
         const timestampInput = e.target.value;
         let reg = new RegExp('[0-5][0-9]:[0-5][0-9]').test(timestampInput);
-        let invalidTimeStamp = false
+        let invalidTimeStamp = false;
         if (reg == false) {
             setInvalidTimeStamp(true);
             setTimestampHelperText('Invalid Timestamp');
@@ -149,9 +168,9 @@ function Home() {
     };
 
     const formatDate = (dateString) => {
-        const options = { year: "numeric", month: "long", day: "numeric" }
-        return new Date(dateString).toLocaleDateString(undefined, options) + ' ' + new Date(dateString).toLocaleTimeString()
-    }
+        const options = { year: "numeric", month: "long", day: "numeric" };
+        return new Date(dateString).toLocaleDateString(undefined, options) + ' ' + new Date(dateString).toLocaleTimeString();
+    };
 
     useEffect(() => {
         axios.get('/api/get')
@@ -159,14 +178,15 @@ function Home() {
                 // Populate the comments section
                 setNumComments(res.data.length);
                 const commentList = res.data.map((comment) => {
-                    return(
-                        <ListItem divider key={comment.id}>
+                    return (
+                        <ListItem divider key={comment.id} className = {classes.row}>
                             <Avatar style={{marginRight:'20px'}}>
                                 {comment.username[0].toUpperCase()}
                             </Avatar>
                             <ListItemText 
+                                className = {classes.td}
                                 primary={
-                                    <Typography noWrap>
+                                    <Typography>
                                         {comment.username} at
                                         <Button
                                             style = {{marginLeft: '3px'}}
@@ -178,13 +198,13 @@ function Home() {
                                     
                                 }
                                 secondary={
-                                    <Typography className={classes.listItem}>
+                                    <Typography noWrap>
                                         {comment.content}
                                     </Typography>
                                 } 
                             />
                             <ListItemText
-                                style={{display:'flex', justifyContent:'flex-end'}}
+                                className = {classes.tdR}
                                 primary={
                                     <Typography>
                                         {formatDate(comment.date_created)}
@@ -221,11 +241,11 @@ function Home() {
 
             <Waveform/>
 
-            <div style = {{marginLeft: '20px', marginTop: '10px', display: 'flex'}}>
+            <div className = {classes.addComment}>
                 <ChatBubbleIcon classes={{ root: classes.numComments}}/>
                 <Typography style = {{marginLeft: '5px'}} classes={{ root: classes.numComments}}>{numComments} comments</Typography>
             </div>
-            <List style={{maxHeight: '65vh', minWidth: '100vw', overflow: 'auto'}}>
+            <List className = {classes.commentSection}>
                 {comments}
             </List>
             <Dialog
